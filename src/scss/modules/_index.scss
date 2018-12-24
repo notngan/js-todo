@@ -16,23 +16,43 @@ h1 {
 
 #todo-list {
   li {
-    padding: 20px;
+    padding: 20px 0;
     border-bottom: 1px solid #ddd;
   }
 
   .delete-btn {
     float: right;
+
     &:hover {
       cursor: pointer;
     }
   }
+
+  .complete-btn {
+    border: 1px solid #aaa;
+    padding: 2px 5px;
+    margin-right: 20px;
+    border-radius: 50%;
+
+    &:hover {
+      cursor: pointer;
+      background: #ddd;
+    }
+  }
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.show {
+  visibility: visible;
 }
 
 .bottom-wrap {
   font-size: $font-size-sm;
   margin-top: 20px;
-  display: flex;
+  display: none;
   justify-content: space-between;
   align-items: center;
-  display: none;
 }
