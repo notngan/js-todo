@@ -49,6 +49,14 @@ h1 {
   visibility: visible;
 }
 
+.active {
+  border-color: orange;
+}
+
+.display-none {
+  display: none;
+}
+
 .bottom-wrap {
   font-size: $font-size-sm;
   margin-top: 20px;
