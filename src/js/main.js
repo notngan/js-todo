@@ -17,104 +17,121 @@ window.addEventListener('DOMContentLoaded', function () {
   let activeItems = document.getElementsByClassName('hide');
   let completeItems = document.getElementsByClassName('complete');
 
-  // ADD TODOS
-  input.addEventListener('keyup', function (e) {
-    if (e.keyCode == 13) {
-      let item = document.createElement('li');
-      if (input.value !== '') {
-        item.innerHTML = `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span> <span>${input.value}</span><span class="delete-btn">\u00D7</span>`;
-        list.appendChild(item);
+  function deleteTodo() {
+    let li = this.parentElement;
+    li.parentElement.removeChild(li);
 
-        input.value = '';
-        count += 1;
+    if (li.querySelector('.complete-icon').classList.contains('complete') == true) {
+      return;
+    } else {
+      if (count > 0 ) {
+        count -= 1;
         countDisplay.innerHTML = count;
-
-        bottom.style.display = 'flex';
-
-        // DELETE TODOS
-        for (let i = 0; i < deleteBtns.length; i++) {
-          deleteBtns[i].onclick = function() {
-            let li = this.parentElement;
-            li.parentElement.removeChild(li);
-
-            if (count > 0) {
-              count -= 1;
-              countDisplay.innerHTML = count;
-            } else {
-              countDisplay.innerHTML = 0;
-            }
-
-            if (itemList.length < 1) {
-              bottom.style.display = 'none';
-            }
-          }
-        }
-
-        // COMPLETE TODOS
-        for (let i = 0; i < completeBtns.length; i++) {
-          completeBtns[i].onclick = function () {
-            let li = this.parentElement;
-            let liText = li.getElementsByTagName('span')[2];
-            let completeIcon = this.firstChild;
-
-            if (completeIcon.classList.contains('hide') == true) {
-              liText.style.textDecoration = 'line-through';
-              completeIcon.classList.remove('hide');
-              completeIcon.classList.add('complete');
-
-              if (count < 0) {
-                countDisplay.innerHTML = 0;
-              } else {
-                count -= 1;
-                countDisplay.innerHTML = count;
-              }
-            } else {
-              liText.style.textDecoration = 'none';
-              completeIcon.classList.remove('complete');
-              completeIcon.classList.add('hide');
-              count += 1;
-              countDisplay.innerHTML = count;
-            }
-          }
-        }
+      } else {
+        countDisplay.innerHTML = 0;
       }
+    }
+    if (itemList.length < 1) {
+      bottom.style.display = 'none';
+    }
+  }
+
+  function completeTodo() {
+    let li = this.parentElement;
+    let liText = li.getElementsByTagName('span')[2];
+    let completeIcon = this.getElementsByClassName('complete-icon')[0];
+
+    if (completeIcon.classList.contains('hide') == true) {
+      liText.style.textDecoration = 'line-through';
+      liText.style.color = '#aaa';
+      completeIcon.classList.remove('hide');
+      completeIcon.classList.add('complete');
+
+      if (count < 0) {
+        countDisplay.innerHTML = 0;
+      } else {
+        count -= 1;
+        countDisplay.innerHTML = count;
+      }
+
+    } else {
+      liText.style.textDecoration = 'none';
+      completeIcon.classList.remove('complete');
+      completeIcon.classList.add('hide');
+      count += 1;
+      countDisplay.innerHTML = count;
+    }
+  }
+
+  function addClass(ar, cl) {
+    Array.from(ar).forEach(item => {
+      item.parentElement.parentElement.classList.add(cl);
+    });
+  }
+
+  function removeClass(ar, cl) {
+    Array.from(ar).forEach(item => {
+      item.parentElement.parentElement.classList.remove(cl);
+    });
+  }
+
+  function addButtonClass(sthg) {
+    Array.from(btns).forEach(item => {
+      item.classList.remove('active');
+    });
+    sthg.classList.add('active');
+  }
+
+  // ADD TODO
+  input.addEventListener('keydown', function (e) {
+    if (e.keyCode !== 13) return;
+
+    let item = document.createElement('li');
+
+    if (input.value !== '') {
+      item.innerHTML =
+      `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
+      <span>${input.value}</span>
+      <span class="delete-btn">\u00D7</span>`;
+
+      list.appendChild(item);
+
+      input.value = '';
+      count += 1;
+      countDisplay.innerHTML = count;
+      bottom.style.display = 'flex';
+
+      // DELETE TODO
+      Array.from(deleteBtns).forEach(item => {
+        item.addEventListener('click', deleteTodo);
+      });
+
+      // COMPLETE TODO
+      Array.from(completeBtns).forEach(item => {
+        item.addEventListener('click', completeTodo);
+      });
     }
   });
 
-  // SHOW ACT IVE TODOS
+  // SHOW ACTIVE TODO
   btnActive.addEventListener('click', function () {
-    for (let i = 0; i < completeItems.length; i++) {
-      for (let i = 0; i < activeItems.length; i++) {
-        activeItems[i].parentElement.parentElement.classList.remove('display-none');
-      }
-      completeItems[i].parentElement.parentElement.classList.add('display-none');
-    }
-    for (let i = 0; i < btns.length; i++) {
-      btns[i].classList.remove('active');
-    }
-    this.classList.add('active');
+    addClass(completeItems, 'display-none');
+    removeClass(activeItems, 'display-none');
+    addButtonClass(this);
   });
 
+  // SHOW COMPLETED TODO
   btnComplete.addEventListener('click', function () {
-    for (let i = 0; i < activeItems.length; i++) {
-      for (let i = 0; i < completeItems.length; i++) {
-        completeItems[i].parentElement.parentElement.classList.remove('display-none');
-      }
-      activeItems[i].parentElement.parentElement.classList.add('display-none');
-    }
-    for (let i = 0; i < btns.length; i++) {
-      btns[i].classList.remove('active');
-    }
-    this.classList.add('active');
+    addClass(activeItems, 'display-none');
+    removeClass(completeItems, 'display-none');
+    addButtonClass(this);
   });
 
+  // SHOW ALL TODO
   btnAll.addEventListener('click', function () {
-    for (let i = 0; i < itemList.length; i++) {
-      itemList[i].classList.remove('display-none');
-    }
-    for (let i = 0; i < btns.length; i++) {
-      btns[i].classList.remove('active');
-    }
-    this.classList.add('active');
+    Array.from(itemList).forEach(item => {
+      item.classList.remove('display-none');
+    });
+    addButtonClass(this);
   });
 });
