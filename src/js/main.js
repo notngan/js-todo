@@ -99,7 +99,7 @@ window.addEventListener('DOMContentLoaded', function () {
     sthg.classList.add('active');
   }
 
-  // ADD TODO
+  // ADD
   input.addEventListener('keydown', function (e) {
     if (e.keyCode !== 13) return;
 
@@ -120,6 +120,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
       let contentArr = [];
 
+      // EDIT
       Array.from(contents).forEach(item => {
         item.addEventListener('dblclick', function() {
           this.contentEditable = true;
@@ -130,40 +131,38 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // DELETE TODO
+      // DELETE
       Array.from(deleteBtns).forEach(item => {
         item.addEventListener('click', deleteTodo);
       });
 
-      // COMPLETE TODO
+      // COMPLETE
       Array.from(completeBtns).forEach(item => {
         item.addEventListener('click', completeTodo);
       });
     }
   });
 
-  // SHOW ACTIVE TODO
+  // SHOW ACTIVE
   btnActive.addEventListener('click', function () {
     addClass(completeItems, 'display-none');
     removeClass(activeItems, 'display-none');
     addButtonClass(this);
   });
 
-  // SHOW COMPLETED TODO
+  // SHOW COMPLETED
   btnComplete.addEventListener('click', function () {
     addClass(activeItems, 'display-none');
     removeClass(completeItems, 'display-none');
     addButtonClass(this);
   });
 
-  // SHOW ALL TODO
+  // SHOW ALL
   btnAll.addEventListener('click', function () {
     Array.from(itemList).forEach(item => {
       item.classList.remove('display-none');
     });
     addButtonClass(this);
   });
-
-  //EDIT
 
 });
