@@ -5,9 +5,16 @@
   <div class="container-sm">
     <h1>todos</h1>
     <input id="new-input" class="new-input" placeholder="What needs to be done?" autofocus>
-    <ul id="todo-list">
+    <ul id="todo-list"></ul>
 
-    </ul>
+    <div class="bottom-wrap">
+      <div><span id="item-count"></span> item(s) left</div>
+      <div>
+        <button class="btn" id="btn-all">all</button>
+        <button class="btn" id="btn-active">active</button>
+        <button class="btn" id="btn-complete">completed</button>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %}
