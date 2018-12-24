@@ -1,3 +1,5 @@
+import { parse } from "path";
+
 window.addEventListener('DOMContentLoaded', function () {
   const input = document.querySelector('#new-input');
   const list = document.querySelector('#todo-list');
@@ -7,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   let deleteBtns = document.getElementsByClassName('delete-btn');
   let completeBtns = document.getElementsByClassName('complete-btn');
+  let contents = document.getElementsByClassName('content');
 
   let btnAll = document.querySelector('#btn-all');
   let btnActive = document.querySelector('#btn-active');
@@ -16,6 +19,20 @@ window.addEventListener('DOMContentLoaded', function () {
   let count = 0;
   let activeItems = document.getElementsByClassName('hide');
   let completeItems = document.getElementsByClassName('complete');
+
+  // displayStorage();
+
+  // function displayStorage() {
+  //   const storage = JSON.parse(localStorage.getItem('list'));
+  //   console.log(storage);
+  //   Array.from(storage).forEach(item => {
+  //     let li = document.createElement('li');
+  //     li.innerHTML = `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
+  //     <span class="content" contentEditable="false">${item}</span>
+  //     <span class="delete-btn">\u00D7</span>`
+  //     list.appendChild(li);
+  //   });
+  // }
 
   function deleteTodo() {
     let li = this.parentElement;
@@ -91,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function () {
     if (input.value !== '') {
       item.innerHTML =
       `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
-      <span>${input.value}</span>
+      <span class="content" contentEditable="false">${input.value}</span>
       <span class="delete-btn">\u00D7</span>`;
 
       list.appendChild(item);
@@ -100,6 +117,18 @@ window.addEventListener('DOMContentLoaded', function () {
       count += 1;
       countDisplay.innerHTML = count;
       bottom.style.display = 'flex';
+
+      let contentArr = [];
+
+      Array.from(contents).forEach(item => {
+        item.addEventListener('dblclick', function() {
+          this.contentEditable = true;
+        });
+        contentArr.push(item.textContent);
+        if (typeof(Storage) !== undefined) {
+          localStorage.setItem('list', JSON.stringify(contentArr));
+        }
+      });
 
       // DELETE TODO
       Array.from(deleteBtns).forEach(item => {
@@ -134,4 +163,7 @@ window.addEventListener('DOMContentLoaded', function () {
     });
     addButtonClass(this);
   });
+
+  //EDIT
+
 });
