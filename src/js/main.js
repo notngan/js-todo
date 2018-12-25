@@ -1,80 +1,75 @@
 import { parse } from "path";
+import { stringify } from "querystring";
 
 window.addEventListener('DOMContentLoaded', function () {
   const input = document.querySelector('#new-input');
   const list = document.querySelector('#todo-list');
-  let itemList = document.getElementsByTagName('li');
   const bottom = document.querySelector('.bottom-wrap');
   const countDisplay = document.querySelector('#item-count');
+  const contents = document.querySelectorAll('.content');
 
-  let deleteBtns = document.getElementsByClassName('delete-btn');
-  let completeBtns = document.getElementsByClassName('complete-btn');
-  let contents = document.getElementsByClassName('content');
+  const btnAll = document.querySelector('#btn-all');
+  const btnActive = document.querySelector('#btn-active');
+  const btnComplete = document.querySelector('#btn-complete');
+  const btns = document.querySelectorAll('.btn');
+  const store = JSON.parse(localStorage.getItem('list'));
+  const contentArr = [];
+  contentArr.push(...store);
 
-  let btnAll = document.querySelector('#btn-all');
-  let btnActive = document.querySelector('#btn-active');
-  let btnComplete = document.querySelector('#btn-complete');
-  let btns = document.getElementsByClassName('btn');
+  console.log(contentArr);
 
-  let count = 0;
-  let activeItems = document.getElementsByClassName('hide');
-  let completeItems = document.getElementsByClassName('complete');
+  displayStorage();
+  function displayStorage() {
+    if (!store || store.length < 1) return;
 
-  // displayStorage();
-  // function displayStorage() {
-  //   const storage = JSON.parse(localStorage.getItem('list'));
-  //   console.log(storage);
-  //   Array.from(storage).forEach(item => {
-  //     let li = document.createElement('li');
-  //     li.innerHTML = `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
-  //     <span class="content" contentEditable="false">${item}</span>
-  //     <span class="delete-btn">\u00D7</span>`
-  //     list.appendChild(li);
-  //   });
-  // }
+    for (let i = 0; i < store.length; i++) {
+      let li = document.createElement('li');
+      li.innerHTML = `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
+      <span class="content" contentEditable="false">${store[i]}</span>
+      <span class="delete-btn">\u00D7</span>`
+      list.appendChild(li);
+      li.querySelector('.complete-btn').addEventListener('click', completeTodo);
+      li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
+
+      showBottom()
+      countUncomplete();
+    }
+  }
 
   function deleteTodo() {
-    let li = this.parentElement;
+    const items = document.querySelectorAll('li');
+    const li = this.parentElement;
     li.parentElement.removeChild(li);
 
-    if (li.querySelector('.complete-icon').classList.contains('complete') == true) {
-      return;
-    } else {
-      if (count > 0 ) {
-        count -= 1;
-        countDisplay.innerHTML = count;
-      } else {
-        countDisplay.innerHTML = 0;
-      }
-    }
-    if (itemList.length < 1) {
-      bottom.style.display = 'none';
+    const index = contentArr.indexOf(li.querySelector('.content').textContent);
+    contentArr.splice(index, 1);
+
+    //console.log(contentArr);
+
+    localStorage.clear();
+    localStorage.setItem('list', JSON.stringify(contentArr));
+    countUncomplete();
+
+    if (items.length < 2) {
+      hideBottom();
     }
   }
 
   function completeTodo() {
-    let li = this.parentElement;
-    console.log(li);
-    let liText = li.getElementsByTagName('span')[2];
-    let completeIcon = this.getElementsByClassName('complete-icon')[0];
+    const li = this.parentElement;
+    const liText = li.querySelector('.content');
+    const completeIcon = this.querySelector('.complete-icon');
 
-    if (completeIcon.classList.contains('hide') == true) {
+    if (completeIcon.classList.contains('hide')) {
       liText.style.textDecoration = 'line-through';
       liText.style.color = '#aaa';
       completeIcon.classList.remove('hide');
       completeIcon.classList.add('complete');
 
-      if (btnActive.classList.contains('active') == true) {
+      if (btnActive.classList.contains('active')) {
         li.classList.add('display-none');
       }
-
-      if (count < 0) {
-        countDisplay.innerHTML = 0;
-      } else {
-        count -= 1;
-        countDisplay.innerHTML = count;
-      }
-
+      countUncomplete();
 
     } else {
       liText.style.textDecoration = 'none';
@@ -109,12 +104,22 @@ window.addEventListener('DOMContentLoaded', function () {
     sthg.classList.add('active');
   }
 
+  function countUncomplete() {
+    const completeClass = document.querySelectorAll('.hide');
+    countDisplay.innerHTML = completeClass.length;
+  }
+
+  function showBottom() {
+    bottom.style.display = 'flex';
+  }
+
+  function hideBottom(s) {
+    bottom.style.display = 'none';
+  }
   // ADD
   input.addEventListener('keydown', function (e) {
     if (e.keyCode !== 13) return;
-
-    let item = document.createElement('li');
-
+    const item = document.createElement('li');
     if (input.value !== '') {
       item.innerHTML =
       `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
@@ -122,58 +127,59 @@ window.addEventListener('DOMContentLoaded', function () {
       <span class="delete-btn">\u00D7</span>`;
 
       list.appendChild(item);
-
+      contentArr.push(input.value);
+      console.log(contentArr);
+      localStorage.clear();
+      localStorage.setItem('list', JSON.stringify(contentArr));
+      //RESET INPUT
       input.value = '';
-      count += 1;
-      countDisplay.innerHTML = count;
-      bottom.style.display = 'flex';
 
-      let contentArr = [];
+      showBottom();
+      countUncomplete();
 
       // EDIT
       Array.from(contents).forEach(item => {
         item.addEventListener('dblclick', function() {
           this.contentEditable = true;
         });
-        contentArr.push(item.textContent);
-        if (typeof(Storage) !== undefined) {
-          localStorage.setItem('list', JSON.stringify(contentArr));
-        }
       });
 
       // DELETE
+      const deleteBtns = document.querySelectorAll('.delete-btn');
       Array.from(deleteBtns).forEach(item => {
         item.addEventListener('click', deleteTodo);
       });
 
       // COMPLETE
+      const completeBtns =  document.querySelectorAll('.complete-btn');
       Array.from(completeBtns).forEach(item => {
         item.addEventListener('click', completeTodo);
-
       });
     }
   });
 
   // SHOW ACTIVE
   btnActive.addEventListener('click', function () {
+    const activeItems = document.querySelectorAll('.hide');
+    const completeItems = document.querySelectorAll('.complete');
     addClass(completeItems, 'display-none');
     removeClass(activeItems, 'display-none');
     addButtonClass(this);
   });
-
   // SHOW COMPLETED
   btnComplete.addEventListener('click', function () {
+    const completeItems = document.querySelectorAll('.complete');
+    const activeItems = document.querySelectorAll('.hide');
     addClass(activeItems, 'display-none');
     removeClass(completeItems, 'display-none');
     addButtonClass(this);
   });
-
   // SHOW ALL
   btnAll.addEventListener('click', function () {
+    const itemList = document.querySelectorAll('li');
     Array.from(itemList).forEach(item => {
       item.classList.remove('display-none');
     });
     addButtonClass(this);
   });
-
 });
