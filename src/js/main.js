@@ -16,18 +16,23 @@ window.addEventListener('DOMContentLoaded', function () {
   const contentArr = [];
   contentArr.push(...store);
 
-  console.log(contentArr);
-
   displayStorage();
   function displayStorage() {
     if (!store || store.length < 1) return;
-
     for (let i = 0; i < store.length; i++) {
       let li = document.createElement('li');
+
       li.innerHTML = `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
-      <span class="content" contentEditable="false">${store[i]}</span>
+      <span class="content" contentEditable="false">${store[i].text}</span>
       <span class="delete-btn">\u00D7</span>`
+
       list.appendChild(li);
+      if (store[i].isCompleted) {
+        li.querySelector('.complete-icon').classList.remove('hide');
+        li.querySelector('.complete-icon').classList.add('complete');
+        li.querySelector('.content').style.color = '#aaa';
+        li.querySelector('.content').style.textDecoration = 'line-through';
+      }
       li.querySelector('.complete-btn').addEventListener('click', completeTodo);
       li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
 
@@ -43,13 +48,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
     const index = contentArr.indexOf(li.querySelector('.content').textContent);
     contentArr.splice(index, 1);
-
-    //console.log(contentArr);
-
     localStorage.clear();
     localStorage.setItem('list', JSON.stringify(contentArr));
     countUncomplete();
-
     if (items.length < 2) {
       hideBottom();
     }
@@ -66,22 +67,33 @@ window.addEventListener('DOMContentLoaded', function () {
       completeIcon.classList.remove('hide');
       completeIcon.classList.add('complete');
 
+      // Click uncomplete at completed tab
       if (btnActive.classList.contains('active')) {
         li.classList.add('display-none');
       }
       countUncomplete();
 
+      const index = contentArr.indexOf(liText.textContent);
+      contentArr.splice(index, 1);
+      contentArr.push({
+        text: liText.textContent,
+        isCompleted: true
+      });
+      console.log(contentArr);
+
+      localStorage.clear();
+      localStorage.setItem('list', JSON.stringify(contentArr));
     } else {
       liText.style.textDecoration = 'none';
       liText.style.color = '#333';
       completeIcon.classList.remove('complete');
       completeIcon.classList.add('hide');
-      count += 1;
-      countDisplay.innerHTML = count;
 
-      if (btnComplete.classList.contains('active') == true) {
+      // Click complete at active tab
+      if (btnComplete.classList.contains('active')) {
         li.classList.add('display-none');
       }
+      countUncomplete();
     }
   }
 
@@ -116,6 +128,7 @@ window.addEventListener('DOMContentLoaded', function () {
   function hideBottom(s) {
     bottom.style.display = 'none';
   }
+
   // ADD
   input.addEventListener('keydown', function (e) {
     if (e.keyCode !== 13) return;
@@ -127,10 +140,14 @@ window.addEventListener('DOMContentLoaded', function () {
       <span class="delete-btn">\u00D7</span>`;
 
       list.appendChild(item);
-      contentArr.push(input.value);
-      console.log(contentArr);
+
+      contentArr.push({
+        text: input.value,
+        isCompleted: false
+      });
       localStorage.clear();
       localStorage.setItem('list', JSON.stringify(contentArr));
+
       //RESET INPUT
       input.value = '';
 
@@ -166,6 +183,7 @@ window.addEventListener('DOMContentLoaded', function () {
     removeClass(activeItems, 'display-none');
     addButtonClass(this);
   });
+
   // SHOW COMPLETED
   btnComplete.addEventListener('click', function () {
     const completeItems = document.querySelectorAll('.complete');
@@ -174,6 +192,7 @@ window.addEventListener('DOMContentLoaded', function () {
     removeClass(completeItems, 'display-none');
     addButtonClass(this);
   });
+
   // SHOW ALL
   btnAll.addEventListener('click', function () {
     const itemList = document.querySelectorAll('li');
