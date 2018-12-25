@@ -9,6 +9,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   //console.log(contentArr);
   displayStorage();
+
   // ADD
   input.addEventListener('keydown', function (e) {
     if (e.keyCode !== 13) return;
@@ -37,12 +38,8 @@ window.addEventListener('DOMContentLoaded', function () {
       countUncomplete();
 
       // EDIT
-      const contents = document.querySelectorAll('.content');
-
-      Array.from(contents).forEach(item => {
-        item.addEventListener('dblclick', function() {
-          this.contentEditable = true;
-        });
+      item.querySelector('.content').addEventListener('dblclick', function () {
+        this.contentEditable = true;
       });
 
       // DELETE
@@ -90,7 +87,7 @@ window.addEventListener('DOMContentLoaded', function () {
 //FUNCTIONS
 function displayStorage() {
   const list = document.querySelector('#todo-list');
-  const store = JSON.parse(localStorage.getItem('list'));
+  const store = JSON.parse(localStorage.getItem('list')) || [];
   contentArr.push(...store);
 
   if (!store || store.length < 1) return;
@@ -111,6 +108,9 @@ function displayStorage() {
 
     li.querySelector('.complete-btn').addEventListener('click', completeTodo);
     li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
+    li.querySelector('.content').addEventListener('dblclick', function () {
+      this.contentEditable = true;
+    });
 
     list.appendChild(li);
 
@@ -208,12 +208,12 @@ function removeClass(ar, cl) {
   });
 }
 
-function addButtonClass(sthg) {
+function addButtonClass(element) {
   const btns = document.querySelectorAll('.btn');
   Array.from(btns).forEach(item => {
     item.classList.remove('active');
   });
-  sthg.classList.add('active');
+  element.classList.add('active');
 }
 
 function countUncomplete() {
