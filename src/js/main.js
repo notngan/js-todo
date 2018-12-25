@@ -15,9 +15,11 @@ window.addEventListener('DOMContentLoaded', function () {
   const store = JSON.parse(localStorage.getItem('list'));
   const contentArr = [];
   contentArr.push(...store);
-  //console.log(contentArr);
+
+  console.log(contentArr);
 
   displayStorage();
+
   function displayStorage() {
     if (!store || store.length < 1) return;
     for (let i = 0; i < store.length; i++) {
@@ -27,15 +29,17 @@ window.addEventListener('DOMContentLoaded', function () {
       <span class="content" contentEditable="false">${store[i].text}</span>
       <span class="delete-btn">\u00D7</span>`
 
-
+      // add completed style
       if (store[i].isCompleted) {
         li.querySelector('.complete-icon').classList.remove('hide');
         li.querySelector('.complete-icon').classList.add('complete');
         li.querySelector('.content').style.color = '#aaa';
         li.querySelector('.content').style.textDecoration = 'line-through';
       }
+
       li.querySelector('.complete-btn').addEventListener('click', completeTodo);
       li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
+
       list.appendChild(li);
 
       showBottom()
@@ -44,16 +48,19 @@ window.addEventListener('DOMContentLoaded', function () {
   }
 
   function deleteTodo() {
-    const items = document.querySelectorAll('li');
+    const todoItems = document.querySelectorAll('li');
     const li = this.parentElement;
     li.parentElement.removeChild(li);
 
-    const index = contentArr.indexOf(li.querySelector('.content').textContent);
-    contentArr.splice(index, 1);
-    localStorage.clear();
-    localStorage.setItem('list', JSON.stringify(contentArr));
+    for (let key in contentArr) {
+      contentArr.splice(key, 1);
+      localStorage.clear();
+      localStorage.setItem('list', JSON.stringify(contentArr));
+      break;
+    }
+
     countUncomplete();
-    if (items.length < 2) {
+    if (todoItems.length < 2) {
       hideBottom();
     }
   }
@@ -73,6 +80,7 @@ window.addEventListener('DOMContentLoaded', function () {
       if (btnActive.classList.contains('active')) {
         li.classList.add('display-none');
       }
+
       countUncomplete();
 
       for (let key in contentArr) {
@@ -82,6 +90,7 @@ window.addEventListener('DOMContentLoaded', function () {
             text: liText.textContent,
             isCompleted: true
           });
+
           localStorage.clear();
           localStorage.setItem('list', JSON.stringify(contentArr));
           break;
@@ -97,6 +106,7 @@ window.addEventListener('DOMContentLoaded', function () {
       if (btnComplete.classList.contains('active')) {
         li.classList.add('display-none');
       }
+
       countUncomplete();
 
       for (let key in contentArr) {
