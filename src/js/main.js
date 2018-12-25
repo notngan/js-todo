@@ -21,7 +21,6 @@ window.addEventListener('DOMContentLoaded', function () {
   let completeItems = document.getElementsByClassName('complete');
 
   // displayStorage();
-
   // function displayStorage() {
   //   const storage = JSON.parse(localStorage.getItem('list'));
   //   console.log(storage);
@@ -55,6 +54,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
   function completeTodo() {
     let li = this.parentElement;
+    console.log(li);
     let liText = li.getElementsByTagName('span')[2];
     let completeIcon = this.getElementsByClassName('complete-icon')[0];
 
@@ -64,6 +64,10 @@ window.addEventListener('DOMContentLoaded', function () {
       completeIcon.classList.remove('hide');
       completeIcon.classList.add('complete');
 
+      if (btnActive.classList.contains('active') == true) {
+        li.classList.add('display-none');
+      }
+
       if (count < 0) {
         countDisplay.innerHTML = 0;
       } else {
@@ -71,12 +75,18 @@ window.addEventListener('DOMContentLoaded', function () {
         countDisplay.innerHTML = count;
       }
 
+
     } else {
       liText.style.textDecoration = 'none';
+      liText.style.color = '#333';
       completeIcon.classList.remove('complete');
       completeIcon.classList.add('hide');
       count += 1;
       countDisplay.innerHTML = count;
+
+      if (btnComplete.classList.contains('active') == true) {
+        li.classList.add('display-none');
+      }
     }
   }
 
@@ -139,6 +149,7 @@ window.addEventListener('DOMContentLoaded', function () {
       // COMPLETE
       Array.from(completeBtns).forEach(item => {
         item.addEventListener('click', completeTodo);
+
       });
     }
   });
