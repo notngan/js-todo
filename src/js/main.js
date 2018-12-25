@@ -15,6 +15,7 @@ window.addEventListener('DOMContentLoaded', function () {
   const store = JSON.parse(localStorage.getItem('list'));
   const contentArr = [];
   contentArr.push(...store);
+  //console.log(contentArr);
 
   displayStorage();
   function displayStorage() {
@@ -26,7 +27,7 @@ window.addEventListener('DOMContentLoaded', function () {
       <span class="content" contentEditable="false">${store[i].text}</span>
       <span class="delete-btn">\u00D7</span>`
 
-      list.appendChild(li);
+
       if (store[i].isCompleted) {
         li.querySelector('.complete-icon').classList.remove('hide');
         li.querySelector('.complete-icon').classList.add('complete');
@@ -35,6 +36,7 @@ window.addEventListener('DOMContentLoaded', function () {
       }
       li.querySelector('.complete-btn').addEventListener('click', completeTodo);
       li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
+      list.appendChild(li);
 
       showBottom()
       countUncomplete();
@@ -73,16 +75,18 @@ window.addEventListener('DOMContentLoaded', function () {
       }
       countUncomplete();
 
-      const index = contentArr.indexOf(liText.textContent);
-      contentArr.splice(index, 1);
-      contentArr.push({
-        text: liText.textContent,
-        isCompleted: true
-      });
-      console.log(contentArr);
-
-      localStorage.clear();
-      localStorage.setItem('list', JSON.stringify(contentArr));
+      for (let key in contentArr) {
+        if (liText.textContent === contentArr[key].text) {
+          contentArr.splice(key, 1);
+          contentArr.splice(key, 0, {
+            text: liText.textContent,
+            isCompleted: true
+          });
+          localStorage.clear();
+          localStorage.setItem('list', JSON.stringify(contentArr));
+          break;
+        }
+      }
     } else {
       liText.style.textDecoration = 'none';
       liText.style.color = '#333';
@@ -94,6 +98,19 @@ window.addEventListener('DOMContentLoaded', function () {
         li.classList.add('display-none');
       }
       countUncomplete();
+
+      for (let key in contentArr) {
+        if (liText.textContent === contentArr[key].text) {
+          contentArr.splice(key, 1);
+          contentArr.splice(key, 0, {
+            text: liText.textContent,
+            isCompleted: false
+          });
+          localStorage.clear();
+          localStorage.setItem('list', JSON.stringify(contentArr));
+          break;
+        }
+      }
     }
   }
 
@@ -133,6 +150,7 @@ window.addEventListener('DOMContentLoaded', function () {
   input.addEventListener('keydown', function (e) {
     if (e.keyCode !== 13) return;
     const item = document.createElement('li');
+
     if (input.value !== '') {
       item.innerHTML =
       `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
