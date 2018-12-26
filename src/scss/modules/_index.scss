@@ -9,7 +9,7 @@ h1 {
 }
 
 .new-input {
-  padding: 16px 16px 16px 60px;
+  padding: 16px 60px;
   width: 100%;
   font-size: $font-size-sm;
   color: #333;
@@ -64,4 +64,10 @@ h1 {
   display: none;
   justify-content: space-between;
   align-items: center;
+}
+
+.complete-text {
+  text-decoration: line-through;
+  color: #aaa;
+
 }

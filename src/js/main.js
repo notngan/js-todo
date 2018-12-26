@@ -43,20 +43,19 @@ function showAll() {
 }
 
 function addTodo(e) {
-
   //return if not key Enter
   if (e.keyCode !== 13) return;
 
-  const list = document.querySelector('.todo-list');
-  const item = document.createElement('li');
+  const ul = document.querySelector('.todo-list');
+  const li = document.createElement('li');
 
   if (input.value !== '') {
-    item.innerHTML =
+    li.innerHTML =
     `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
     <span class="content" contentEditable="false">${input.value}</span>
     <span class="delete-btn">\u00D7</span>`;
 
-    list.appendChild(item);
+    ul.appendChild(li);
 
     contentArr.push({
       text: input.value,
@@ -71,17 +70,16 @@ function addTodo(e) {
     showBottom();
     countUncomplete();
 
-    // edit
-    item.querySelector('.content').addEventListener('dblclick', editTodo);
+    li.querySelector('.content').addEventListener('dblclick', editTodo);
 
-    item.querySelector('.complete-btn').addEventListener('click', completeTodo);
+    li.querySelector('.complete-btn').addEventListener('click', completeTodo);
 
-    item.querySelector('.delete-btn').addEventListener('click', deleteTodo);
+    li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
   }
 }
 
 function displayStorage() {
-  const list = document.querySelector('.todo-list');
+  const ul = document.querySelector('.todo-list');
   const store = JSON.parse(localStorage.getItem('list')) || [];
   contentArr.push(...store);
 
@@ -98,15 +96,14 @@ function displayStorage() {
     if (store[i].isCompleted) {
       li.querySelector('.complete-icon').classList.remove('hide');
       li.querySelector('.complete-icon').classList.add('complete');
-      li.querySelector('.content').style.color = '#aaa';
-      li.querySelector('.content').style.textDecoration = 'line-through';
+      li.querySelector('.content').classList.add('complete-text');
     }
 
     li.querySelector('.complete-btn').addEventListener('click', completeTodo);
     li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
     li.querySelector('.content').addEventListener('dblclick', editTodo);
 
-    list.appendChild(li);
+    ul.appendChild(li);
 
     showBottom()
     countUncomplete();
@@ -134,7 +131,6 @@ function deleteTodo() {
 
 function editTodo() {
   this.contentEditable = true;
-  console.log(this);
   this.addEventListener('input', function () {
     const ul = this.parentElement.parentElement;
     const li = this.parentElement;
@@ -157,13 +153,13 @@ function completeTodo() {
   const completeIcon = this.querySelector('.complete-icon');
   const index = Array.prototype.indexOf.call(li.parentElement.childNodes, li)
 
+  // item is active
   if (completeIcon.classList.contains('hide')) {
-    liText.style.textDecoration = 'line-through';
-    liText.style.color = '#aaa';
+    liText.classList.add('complete-text');
     completeIcon.classList.remove('hide');
     completeIcon.classList.add('complete');
 
-    // Click uncomplete at completed tab
+    // hide completed item in active tab
     if (btnActive.classList.contains('active')) {
       li.classList.add('display-none');
     }
@@ -172,23 +168,19 @@ function completeTodo() {
 
     for (let key in contentArr) {
       if (index == key) {
-        contentArr.splice(key, 1);
-        contentArr.splice(key, 0, {
-          text: liText.textContent,
-          isCompleted: true
-        });
+        contentArr[key].isCompleted = true;
         localStorage.clear();
         localStorage.setItem('list', JSON.stringify(contentArr));
         break;
       }
     }
-  } else {
-    liText.style.textDecoration = 'none';
-    liText.style.color = '#333';
+    
+  } else { // item is completed
+    liText.classList.remove('complete-text');
     completeIcon.classList.remove('complete');
     completeIcon.classList.add('hide');
 
-    // Click complete at active tab
+    // hide active item in complete tab
     if (btnComplete.classList.contains('active')) {
       li.classList.add('display-none');
     }
@@ -197,11 +189,7 @@ function completeTodo() {
 
     for (let key in contentArr) {
       if (index == key) {
-        contentArr.splice(key, 1);
-        contentArr.splice(key, 0, {
-          text: liText.textContent,
-          isCompleted: false
-        });
+        contentArr[key].isCompleted = false;
         localStorage.clear();
         localStorage.setItem('list', JSON.stringify(contentArr));
         break;
