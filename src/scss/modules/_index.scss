@@ -42,14 +42,6 @@ h1 {
   }
 }
 
-.hide {
-  visibility: hidden;
-}
-
-.show {
-  visibility: visible;
-}
-
 .active {
   border-color: orange;
 }
@@ -66,8 +58,16 @@ h1 {
   align-items: center;
 }
 
-.complete-text {
-  text-decoration: line-through;
-  color: #aaa;
+.complete-icon {
+  visibility: hidden;
+}
 
+.complete {
+  .complete-icon {
+    visibility: visible;
+  }
+  .content {
+    text-decoration: line-through;
+    color: #aaa;
+  }
 }
