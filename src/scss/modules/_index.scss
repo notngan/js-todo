@@ -15,29 +15,38 @@ h1 {
   color: #333;
 }
 
-#todo-list {
-  li {
-    padding: 20px 0;
+.todo-list {
+
+  .todo-item {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px 0;
     border-bottom: 1px solid #ddd;
   }
 
-  .delete-btn {
-    float: right;
-
-    &:hover {
-      cursor: pointer;
-    }
+  .content {
+    flex: 2;
+    border: 0;
+    padding: 0 10px;
+    font-size: $font-size-sm * 1.2;
   }
 
   .complete-btn {
     border: 1px solid #aaa;
-    padding: 2px 5px;
-    margin-right: 20px;
+    padding: 1px 7px;
     border-radius: 50%;
+    z-index: 1;
 
     &:hover {
       cursor: pointer;
       background: #ddd;
+    }
+  }
+
+  .delete-btn {
+    &:hover {
+      cursor: pointer;
     }
   }
 }
@@ -46,14 +55,14 @@ h1 {
   border-color: orange;
 }
 
-.display-none {
-  display: none;
+.hide {
+  display: none !important;
 }
 
 .bottom-wrap {
   font-size: $font-size-sm;
   margin-top: 20px;
-  display: none;
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
@@ -66,6 +75,7 @@ h1 {
   .complete-icon {
     visibility: visible;
   }
+
   .content {
     text-decoration: line-through;
     color: #aaa;
