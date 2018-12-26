@@ -1,96 +1,92 @@
 const contentArr = [];
-const btnActive = document.querySelector('#btn-active');
-const btnAll = document.querySelector('#btn-all');
-const btnComplete = document.querySelector('#btn-complete');
+const input = document.querySelector('.new-input');
+const btnActive = document.querySelector('.btn-active');
+const btnAll = document.querySelector('.btn-all');
+const btnComplete = document.querySelector('.btn-complete');
 
 window.addEventListener('DOMContentLoaded', function () {
-  const input = document.querySelector('#new-input');
-  const list = document.querySelector('#todo-list');
 
-  //console.log(contentArr);
   displayStorage();
 
-  // ADD
-  input.addEventListener('keydown', function (e) {
-    if (e.keyCode !== 13) return;
+  input.addEventListener('keydown', addTodo);
 
-    const item = document.createElement('li');
+  btnActive.addEventListener('click', showActive);
 
-    if (input.value !== '') {
-      item.innerHTML =
-      `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
-      <span class="content" contentEditable="false">${input.value}</span>
-      <span class="delete-btn">\u00D7</span>`;
+  btnComplete.addEventListener('click', showComplete);
 
-      list.appendChild(item);
-
-      contentArr.push({
-        text: input.value,
-        isCompleted: false
-      });
-      localStorage.clear();
-      localStorage.setItem('list', JSON.stringify(contentArr));
-
-      //RESET INPUT
-      input.value = '';
-
-      showBottom();
-      countUncomplete();
-
-      // EDIT
-      item.querySelector('.content').addEventListener('dblclick', function () {
-        this.contentEditable = true;
-      });
-
-      // DELETE
-      const deleteBtns = document.querySelectorAll('.delete-btn');
-      Array.from(deleteBtns).forEach(item => {
-        item.addEventListener('click', deleteTodo);
-      });
-
-      // COMPLETE
-      const completeBtns =  document.querySelectorAll('.complete-btn');
-      Array.from(completeBtns).forEach(item => {
-        item.addEventListener('click', completeTodo);
-      });
-    }
-  });
-
-  // SHOW ACTIVE
-  btnActive.addEventListener('click', function () {
-    const activeItems = document.querySelectorAll('.hide');
-    const completeItems = document.querySelectorAll('.complete');
-    addClass(completeItems, 'display-none');
-    removeClass(activeItems, 'display-none');
-    addButtonClass(this);
-  });
-
-  // SHOW COMPLETED
-  btnComplete.addEventListener('click', function () {
-    const completeItems = document.querySelectorAll('.complete');
-    const activeItems = document.querySelectorAll('.hide');
-    addClass(activeItems, 'display-none');
-    removeClass(completeItems, 'display-none');
-    addButtonClass(this);
-  });
-
-  // SHOW ALL
-  btnAll.addEventListener('click', function () {
-    const itemList = document.querySelectorAll('li');
-    Array.from(itemList).forEach(item => {
-      item.classList.remove('display-none');
-    });
-    addButtonClass(this);
-  });
+  btnAll.addEventListener('click', showAll);
 });
 
 //FUNCTIONS
+function showActive() {
+  const activeItems = document.querySelectorAll('.hide');
+  const completeItems = document.querySelectorAll('.complete');
+  addClass(completeItems, 'display-none');
+  removeClass(activeItems, 'display-none');
+  addButtonClass(this);
+}
+
+function  showComplete() {
+  const completeItems = document.querySelectorAll('.complete');
+  const activeItems = document.querySelectorAll('.hide');
+  addClass(activeItems, 'display-none');
+  removeClass(completeItems, 'display-none');
+  addButtonClass(this);
+}
+
+function showAll() {
+  const itemList = document.querySelectorAll('li');
+    Array.from(itemList).forEach(item => {
+      item.classList.remove('display-none');
+    });
+  addButtonClass(this);
+}
+
+function addTodo(e) {
+
+  //return if not key Enter
+  if (e.keyCode !== 13) return;
+
+  const list = document.querySelector('.todo-list');
+  const item = document.createElement('li');
+
+  if (input.value !== '') {
+    item.innerHTML =
+    `<span class="complete-btn"><span class="complete-icon hide">&#10003;</span></span>
+    <span class="content" contentEditable="false">${input.value}</span>
+    <span class="delete-btn">\u00D7</span>`;
+
+    list.appendChild(item);
+
+    contentArr.push({
+      text: input.value,
+      isCompleted: false
+    });
+
+    localStorage.clear();
+    localStorage.setItem('list', JSON.stringify(contentArr));
+
+    // reset input
+    input.value = '';
+    showBottom();
+    countUncomplete();
+
+    // edit
+    item.querySelector('.content').addEventListener('dblclick', editTodo);
+
+    item.querySelector('.complete-btn').addEventListener('click', completeTodo);
+
+    item.querySelector('.delete-btn').addEventListener('click', deleteTodo);
+  }
+}
+
 function displayStorage() {
-  const list = document.querySelector('#todo-list');
+  const list = document.querySelector('.todo-list');
   const store = JSON.parse(localStorage.getItem('list')) || [];
   contentArr.push(...store);
 
   if (!store || store.length < 1) return;
+
   for (let i = 0; i < store.length; i++) {
     let li = document.createElement('li');
 
@@ -108,9 +104,7 @@ function displayStorage() {
 
     li.querySelector('.complete-btn').addEventListener('click', completeTodo);
     li.querySelector('.delete-btn').addEventListener('click', deleteTodo);
-    li.querySelector('.content').addEventListener('dblclick', function () {
-      this.contentEditable = true;
-    });
+    li.querySelector('.content').addEventListener('dblclick', editTodo);
 
     list.appendChild(li);
 
@@ -132,9 +126,29 @@ function deleteTodo() {
   }
 
   countUncomplete();
+
   if (todoItems.length < 2) {
     hideBottom();
   }
+}
+
+function editTodo() {
+  this.contentEditable = true;
+  console.log(this);
+  this.addEventListener('input', function () {
+    const ul = this.parentElement.parentElement;
+    const li = this.parentElement;
+    const index = Array.prototype.indexOf.call(ul.childNodes, li)
+
+    for (let key in contentArr) {
+      if (key == index) {
+        contentArr[key].text = this.textContent;
+        localStorage.clear();
+        localStorage.setItem('list', JSON.stringify(contentArr));
+        break;
+      }
+    }
+  });
 }
 
 function completeTodo() {
@@ -196,15 +210,15 @@ function completeTodo() {
   }
 }
 
-function addClass(ar, cl) {
-  Array.from(ar).forEach(item => {
-    item.parentElement.parentElement.classList.add(cl);
+function addClass(arr, className) {
+  Array.from(arr).forEach(item => {
+    item.parentElement.parentElement.classList.add(className);
   });
 }
 
-function removeClass(ar, cl) {
-  Array.from(ar).forEach(item => {
-    item.parentElement.parentElement.classList.remove(cl);
+function removeClass(arr, className) {
+  Array.from(arr).forEach(item => {
+    item.parentElement.parentElement.classList.remove(className);
   });
 }
 
