@@ -20,6 +20,7 @@ h1 {
   .todo-item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
     padding: 16px 0;
     border-bottom: 1px solid #ddd;
@@ -34,13 +35,14 @@ h1 {
 
   .complete-btn {
     border: 1px solid #aaa;
-    padding: 1px 7px;
-    border-radius: 50%;
     z-index: 1;
 
     &:hover {
       cursor: pointer;
-      background: #ddd;
+    }
+
+    &:checked {
+      color: #000;
     }
   }
 
@@ -67,17 +69,13 @@ h1 {
   align-items: center;
 }
 
-.complete-icon {
-  visibility: hidden;
-}
-
 .complete {
-  .complete-icon {
-    visibility: visible;
-  }
-
+  // .complete-icon {
+  //   visibility: visible;
+  // }
   .content {
     text-decoration: line-through;
     color: #aaa;
   }
 }
+

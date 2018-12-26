@@ -6,15 +6,15 @@ const btnComplete = document.querySelector('.btn-complete');
 const bottom = document.querySelector('.bottom-wrap');
 
 window.addEventListener('DOMContentLoaded', function () {
-  //displayStorage();
+  displayStorage();
 
   input.addEventListener('keydown', addTodo);
 
-  // btnActive.addEventListener('click', showActive);
+  btnActive.addEventListener('click', showActive);
 
-  // btnComplete.addEventListener('click', showComplete);
+  btnComplete.addEventListener('click', showComplete);
 
-  // btnAll.addEventListener('click', showAll);
+  btnAll.addEventListener('click', showAll);
 });
 
 //FUNCTIONS
@@ -30,7 +30,7 @@ function addTodo(e) {
 
   if (input.value !== '') {
     item.innerHTML =
-    `<span class="complete-btn"><span class="complete-icon">&#10003;</span></span>
+    `<input class="complete-btn" type="checkbox"></input>
     <input class="content" disabled></input>
     <span class="delete-btn">\u00D7</span>`
 
@@ -58,7 +58,7 @@ function addTodo(e) {
 
     //console.log(item.querySelector('.content'));
     item.addEventListener('dblclick', editTodo);
-    item.querySelector('.complete-btn').addEventListener('click', completeTodo);
+    item.querySelector('.complete-btn').addEventListener('change', completeTodo);
     item.querySelector('.delete-btn').addEventListener('click', deleteTodo);
   }
 }
@@ -74,15 +74,17 @@ function displayStorage() {
     const item = document.createElement('div');
     item.classList.add('todo-item');
 
-    item.innerHTML = `<span class="complete-btn"><span class="complete-icon">&#10003;</span></span>
-    <input class="content" disabled></input>
-    <span class="delete-btn">\u00D7</span>`
+    item.innerHTML =
+      `<input class="complete-btn" type="checkbox"></input>
+      <input class="content" disabled></input>
+      <span class="delete-btn">\u00D7</span>`
 
     item.querySelector('.content').value = store[i].text;
-
+    // console.log(store[i]);
     // add completed style
     if (store[i].isCompleted) {
       item.classList.add('complete');
+      item.querySelector('.complete-btn').checked = true;
     }
 
     list.appendChild(item);
@@ -147,7 +149,7 @@ function completeTodo() {
   const index = Array.prototype.indexOf.call(list.childNodes, item)
 
   // item is completed
-  if (item.classList.contains('complete')) {
+  if (!this.checked) {
     item.classList.remove('complete');
     if (btnComplete.classList.contains('active')) {
       item.classList.add('hide');
