@@ -247,6 +247,10 @@ function completeAll() {
         item.classList.add('hide');
       }
 
+      if (btnComplete.classList.contains('active')) {
+        item.classList.remove('hide');
+      }
+
       for (let key in contentArr) {
         if (index == key) {
           contentArr[key].isCompleted = true;
