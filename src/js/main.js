@@ -83,7 +83,6 @@ function displayStorage() {
   const store = JSON.parse(localStorage.getItem('list')) || [];
 
   contentArr.push(...store);
-  console.log(contentArr);
 
   if (!store || store.length < 1) return;
 
@@ -122,6 +121,7 @@ function displayStorage() {
 function deleteTodo(deleteBtn) {
   const todoItems = document.querySelectorAll('.todo-item');
   const item = deleteBtn.parentElement;
+  const list = item.parentElement;
 
   if (!list || !item) return;
 
@@ -146,18 +146,20 @@ function deleteTodo(deleteBtn) {
 
 function editTodo(content) {
   const todoItems = document.querySelectorAll('.todo-item');
+
   content.disabled = false;
 
-  // console.log(this);
   content.addEventListener('keydown', function (e) {
     if (e.keyCode !== 13) return;
 
     const item = content.parentElement;
+    const list = item.parentElement;
 
     if (list == null || item == null) return;
 
     const index = Array.prototype.indexOf.call(list.childNodes, item);
 
+    // if content empty
     if (content.value == '') {
       for (let key in contentArr) {
         if (index == key) {
@@ -194,7 +196,7 @@ function completeTodo(checkbox) {
   if (checkbox.checked) {
     item.classList.add('complete');
 
-    if (btnComplete.classList.contains('active')) {
+    if (btnActive.classList.contains('active')) {
       item.classList.add('hide');
     }
 
@@ -207,11 +209,12 @@ function completeTodo(checkbox) {
         break;
       }
     }
+
   } else { // item is active
     item.classList.remove('complete');
 
-    if (btnActive.classList.contains('active')) {
-      item.classList.remove('hide');
+    if (btnComplete.classList.contains('active')) {
+      item.classList.add('hide');
     }
 
     countActive();
@@ -255,9 +258,9 @@ function completeAll() {
 
     if (completed === allItems.length) { // all items are completed
       Array.from(allItems).forEach(el => {
-        const index = Array.prototype.indexOf.call(list.childNodes, el);
         el.classList.remove('complete');
         el.querySelector('.complete-btn').checked = false;
+        const index = Array.prototype.indexOf.call(list.childNodes, el);
 
         countActive();
 
@@ -265,6 +268,11 @@ function completeAll() {
           el.classList.add('hide');
         }
 
+        if (btnActive.classList.contains('active')) {
+          el.classList.remove('hide');
+        }
+
+        // save to storage
         for (let key in contentArr) {
           if (index == key) {
             contentArr[key].isCompleted = false;
@@ -273,37 +281,37 @@ function completeAll() {
           }
         }
       });
-
     }
   });
 
 }
 
 function showActive() {
-  const activeItems = document.querySelectorAll('.todo-item:not(.complete)');
-  const completeItems = document.querySelectorAll('.complete');
-
-  Array.from(activeItems).forEach(item => {
-    item.classList.remove('hide');
-  });
-
-  Array.from(completeItems).forEach(item => {
-    item.classList.add('hide');
+  const allItems =  document.querySelectorAll('.todo-item');
+  console.log('active');
+  Array.from(allItems).forEach(item => {
+    if (!item.classList.contains('complete')) {
+      item.classList.remove('hide');
+    } else {
+      item.classList.add('hide');
+    }
   });
   addButtonStyle(this);
 }
 
 function showComplete() {
-  const activeItems = document.querySelectorAll('.todo-item:not(.complete)');
-  const completeItems = document.querySelectorAll('.complete');
+  //const activeItems = document.querySelectorAll('.todo-item:not(.complete)');
+  //const completeItems = document.querySelectorAll('.complete');
+  const allItems =  document.querySelectorAll('.todo-item');
 
-  Array.from(completeItems).forEach(item => {
-    item.classList.remove('hide');
+  Array.from(allItems).forEach(item => {
+    if (item.classList.contains('complete')) {
+      item.classList.remove('hide');
+    } else {
+      item.classList.add('hide');
+    }
   });
 
-  Array.from(activeItems).forEach(item => {
-    item.classList.add('hide');
-  });
   addButtonStyle(this);
 }
 
@@ -312,6 +320,7 @@ function showAll() {
   Array.from(allItems).forEach(item => {
     item.classList.remove('hide');
   });
+
   addButtonStyle(this);
 }
 
@@ -320,6 +329,7 @@ function addButtonStyle(element) {
   Array.from(btns).forEach(item => {
     item.classList.remove('active');
   });
+
   element.classList.add('active');
 }
 
