@@ -1,5 +1,3 @@
-import { endianness } from "os";
-
 const contentArr = [];
 const input = document.querySelector('.new-input');
 const btnActive = document.querySelector('.btn-active');
